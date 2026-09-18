@@ -15,6 +15,14 @@ dist-ssr
 # Agent scratch
 /.impeccable/
 
+# Agent skill platform binaries (downloaded on first run by the skill launcher)
+.agent/skills/**/bin/
+.agent/skills/**/data/
+.claude/skills/**/bin/
+.claude/skills/**/data/
+.agents/skills/**/bin/
+.agents/skills/**/data/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
