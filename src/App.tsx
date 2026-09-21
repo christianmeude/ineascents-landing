@@ -125,7 +125,7 @@ function ThemeButton({ theme, onToggle }: { theme: Theme; onToggle: () => void }
 
 const API_BASE = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '')
 const APP_BASE = (
-  import.meta.env.VITE_FRONTEND_URL ?? 'https://inea-scents.vercel.app'
+  import.meta.env.VITE_FRONTEND_URL ?? 'https://ineascents-app.vercel.app'
 ).replace(/\/$/, '')
 
 /* Mobile App login URL: env holds the base in prod, but a dev may paste a
