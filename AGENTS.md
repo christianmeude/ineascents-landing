@@ -2,15 +2,15 @@
 
 ### Issue tracker
 
-Issues are tracked in GitHub. See backend `inea-scents/docs/agents/issue-tracker.md`.
+Issues are tracked in GitHub. See backend `ineascents-backend/docs/agents/issue-tracker.md`.
 
 ### Triage labels
 
-Using the default triage labels. See backend `inea-scents/docs/agents/triage-labels.md`.
+Using the default triage labels. See backend `ineascents-backend/docs/agents/triage-labels.md`.
 
 ### Domain docs
 
-Domain docs use a single-context layout. See backend `inea-scents/docs/agents/domain.md`.
+Domain docs use a single-context layout. See backend `ineascents-backend/docs/agents/domain.md`.
 
 ## Standing rules
 
