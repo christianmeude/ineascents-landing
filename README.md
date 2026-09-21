@@ -5,9 +5,9 @@
 ## 🌍 The Ecosystem
 
 The Inea Scents platform consists of three separate repositories. This repository relies on the backend for data:
-1. **`inea-scents-landing` (This Repo)**: React/Vite customer-facing marketing website.
-2. **`inea-scents`**: Laravel backend, PostgreSQL database, and Admin Dashboard.
-3. **`inea_scents_client`**: Flutter cross-platform mobile application for customer bookings.
+1. **`ineascents-landing` (This Repo)**: React/Vite customer-facing marketing website.
+2. **`ineascents-backend`**: Laravel backend, PostgreSQL database, and Admin Dashboard.
+3. **`ineascents-app`**: Flutter cross-platform mobile application for customer bookings.
 
 ## ⚡ Quick Start
 
@@ -42,7 +42,7 @@ The application will launch and typically be available at `http://localhost:5173
 
 ## 🔌 Connectivity
 
-This frontend application relies on the `inea-scents` Backend API for dynamic data. When developing locally, ensure the backend repository is running simultaneously (usually at `http://127.0.0.1:8000`) so that API requests can resolve correctly.
+This frontend application relies on the `ineascents-backend` Backend API for dynamic data. When developing locally, ensure the backend repository is running simultaneously (usually at `http://127.0.0.1:8000`) so that API requests can resolve correctly.
 
 ---
 *Status: Active Development*

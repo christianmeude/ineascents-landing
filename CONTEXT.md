@@ -105,6 +105,6 @@ _Repos_: client
 ## Infrastructure
 
 **Environment**:
-A deployment target with isolated config and backing services. Two environments: `local` (developer machine + Supabase CLI + Studio 54323 + DB 54322) and `production` (Render `inea-scents` + Supabase `inea-scents-db` + Vercel Production; Vercel Preview shares the prod backend). No state, keys, or cookies cross envs. 12-Factor III.
+A deployment target with isolated config and backing services. Two environments: `local` (developer machine + Supabase CLI + Studio 54323 + DB 54322) and `production` (Render `ineascents` + Supabase `ineascents-db` + Vercel Production; Vercel Preview shares the prod backend). No state, keys, or cookies cross envs. 12-Factor III.
 _Avoid_: env toggle in code
 _Repos_: backend, client
