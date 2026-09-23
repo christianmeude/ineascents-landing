@@ -35,7 +35,7 @@ Dev server is typically at `http://localhost:5173`.
 Copy `.env.example` to `.env.local` (names only, never real values):
 
 - `VITE_API_URL` — backend base URL.
-  - Local: `http://127.0.0.1:8000`
+  - Local: `http://127.0.0.1:8080`
   - Production: `https://ineascents.onrender.com`
 - `VITE_FRONTEND_URL` — mobile app base URL for the "Book in App" button.
   - Production: `https://ineascents-app.vercel.app`
@@ -64,7 +64,7 @@ From `package.json`:
 
 Dynamic data and inquiry submission require the backend running:
 
-- Local: `http://127.0.0.1:8000`
+- Local: `http://127.0.0.1:8080`
 - Production: `https://ineascents.onrender.com`
 
 Without it, package/package-list sections fall back and the form shows "Form not configured. Message us on Facebook." (`src/App.tsx:175-178`).
