@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 type Theme = 'light' | 'dark'
 
@@ -36,27 +38,63 @@ function useMeshPause() {
   }, [])
 }
 
-/* Reveal-once observer for the single authored motion */
-function useRise() {
+/* GSAP landing-wide motion: hero entrance on load, scroll reveals everywhere
+   else, stretch band bridging hero into packages. Reduced-motion returns
+   early so the CSS fallback (visible, static) applies. */
+function useGsapMotion() {
   useEffect(() => {
-    const els = Array.from(document.querySelectorAll('.rise, .hero-photo'))
-    if (!('IntersectionObserver' in window)) {
-      els.forEach((el) => el.classList.add('in'))
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    gsap.registerPlugin(ScrollTrigger)
+    let ctx: gsap.Context | undefined
+    try {
+      ctx = gsap.context(() => {
+        gsap
+          .timeline({ defaults: { ease: 'power3.out' } })
+          .fromTo(
+            'header .rise',
+            { y: 28, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.9, stagger: 0.12 },
+            0.1,
+          )
+          .fromTo(
+            'header .hero-photo',
+            { scale: 1.04, opacity: 0 },
+            { scale: 1, opacity: 1, duration: 1.4, ease: 'expo.out' },
+            0.2,
+          )
+      gsap.utils
+        .toArray<HTMLElement>('.rise')
+        .filter((el) => !el.closest('header'))
+        .forEach((el) => {
+          gsap.fromTo(
+            el,
+            { y: 28, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 0.9,
+              ease: 'power3.out',
+              delay: parseFloat(el.style.getPropertyValue('--d')) || 0,
+              scrollTrigger: { trigger: el, start: 'top 88%', once: true },
+            },
+          )
+        })
+      gsap.fromTo(
+        '.stretch-band',
+        { scaleY: 0.2 },
+        {
+          scaleY: 1,
+          ease: 'none',
+          scrollTrigger: { trigger: '.stretch-band', start: 'top bottom', end: 'top 40%', scrub: true },
+        },
+      )
+      })
+    } catch {
+      // GSAP init failed: fall back to the CSS arrival so content never strands hidden.
+      document.querySelectorAll('.rise, .hero-photo').forEach((el) => el.classList.add('in'))
       return
     }
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('in')
-            io.unobserve(entry.target)
-          }
-        })
-      },
-      { threshold: 0.12 },
-    )
-    els.forEach((el) => io.observe(el))
-    return () => io.disconnect()
+    return () => ctx?.revert()
   }, [])
 }
 
@@ -460,7 +498,7 @@ export default function App() {
   const [theme, toggleTheme] = useTheme()
   const [scrolled, setScrolled] = useState(false)
 
-  useRise()
+  useGsapMotion()
   useMeshPause()
 
   useEffect(() => {
@@ -600,6 +638,8 @@ export default function App() {
             </div>
           </div>
         </header>
+
+        <div className="stretch-band" aria-hidden="true" />
 
         <section id="packages" className="relative py-10 md:py-12 scroll-mt-24">
           <div className="max-w-7xl mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
