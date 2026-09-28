@@ -1,0 +1,17 @@
+{
+  "name": "Inea Scents - Bespoke Perfume Bar for Your Event",
+  "short_name": "Inea Scents",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#fdf4f5",
+  "theme_color": "#fdf4f5",
+  "description": "Inea Scents sets up a styled perfume bar at events in Metro Manila. Starts at Php 4,499.",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
