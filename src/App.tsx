@@ -573,14 +573,26 @@ export default function App() {
             <div className="lg:col-span-6 min-w-0">
               <figure className="hero-photo relative">
                 <div className="absolute -inset-3 rounded-[28px] bg-accent/40 dark:bg-cream/10 -rotate-2" aria-hidden="true" />
-                <img
-                  src="/photos/bar-1440.webp"
-                  srcSet="/photos/bar-900.webp 900w, /photos/bar-1440.webp 1440w"
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                  alt="The Inea Scents perfume bar at an event - white illuminated bar with four glass scent dispensers, floral styling, and a book-us sign"
+                <video
                   className="relative rounded-3xl w-full min-w-0 aspect-[16/10] sm:aspect-[4/5] lg:aspect-auto lg:h-[62svh] object-cover lift"
-                  fetchPriority="high"
-                />
+                  src="/hero-bar.mp4"
+                  poster="/photos/bar-1440.webp"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  aria-label="The Inea Scents perfume bar at an event - white illuminated bar with four glass scent dispensers, floral styling, and a book-us sign"
+                >
+                  <img
+                    src="/photos/bar-1440.webp"
+                    srcSet="/photos/bar-900.webp 900w, /photos/bar-1440.webp 1440w"
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    alt="The Inea Scents perfume bar at an event - white illuminated bar with four glass scent dispensers, floral styling, and a book-us sign"
+                    className="relative rounded-3xl w-full min-w-0 aspect-[16/10] sm:aspect-[4/5] lg:aspect-auto lg:h-[62svh] object-cover lift"
+                    fetchPriority="high"
+                  />
+                </video>
                 <figcaption className="relative mt-4 text-sm text-primary/80 dark:text-cream/70 font-light text-center">
                   Our bar, styled for a recent celebration in Metro Manila.
                 </figcaption>
