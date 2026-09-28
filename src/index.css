@@ -360,3 +360,22 @@ main, footer {
     animation: none;
   }
 }
+
+/* ============================================================
+   Stretch band: hero exhales into packages. GSAP scrubs scaleY
+   (origin top) on scroll; static gradient when JS is off.
+   ============================================================ */
+
+.stretch-band {
+  height: clamp(48px, 8vw, 112px);
+  transform-origin: top;
+  background: linear-gradient(180deg, rgba(106, 64, 83, 0.1), rgba(106, 64, 83, 0));
+}
+.dark .stretch-band {
+  background: linear-gradient(180deg, rgba(253, 244, 245, 0.08), rgba(253, 244, 245, 0));
+}
+@media (prefers-reduced-motion: reduce) {
+  .stretch-band {
+    transform: none;
+  }
+}
