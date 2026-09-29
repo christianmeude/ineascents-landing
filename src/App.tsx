@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
+// L6: single source for the business page URL (was triplicated).
+const FACEBOOK_URL = 'https://www.facebook.com/profile.php?id=61580331093927'
+
 type Theme = 'light' | 'dark'
 
 function useTheme(): [Theme, () => void] {
@@ -271,7 +274,7 @@ function ContactForm() {
         <p className="text-primary/70 dark:text-cream/70 font-light mb-8">
           Prefer to chat now? Message us on{' '}
           <a
-            href="https://www.facebook.com/profile.php?id=61580331093927"
+            href={FACEBOOK_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="underline underline-offset-4 decoration-accent hover:decoration-primary dark:hover:decoration-cream transition-colors"
@@ -758,7 +761,7 @@ export default function App() {
             <p className="rise mt-8 text-sm text-primary/80 dark:text-cream/70 font-light" style={{ ['--d' as string]: '0.2s' }}>
               Prefer chat? Message us on{' '}
               <a
-                href="https://www.facebook.com/profile.php?id=61580331093927"
+                href={FACEBOOK_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="underline underline-offset-4 decoration-accent hover:decoration-primary dark:hover:decoration-cream transition-colors"
@@ -787,7 +790,7 @@ export default function App() {
             </a>
             <div className="w-1 h-1 rounded-full bg-cream/40" aria-hidden="true" />
             <a
-              href="https://www.facebook.com/profile.php?id=61580331093927"
+              href={FACEBOOK_URL}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Inea Scents on Facebook"
