@@ -1,9 +1,32 @@
 import { useEffect, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import LegalPage, { PRIVACY_VERSION } from './legal'
 
 // L6: single source for the business page URL (was triplicated).
 const FACEBOOK_URL = 'https://www.facebook.com/profile.php?id=61580331093927'
+
+// L7: hash mini-router (no router dep, Vercel-static safe).
+type LegalRoute = 'home' | 'privacy' | 'terms'
+
+function useLegalRoute(): LegalRoute {
+  const read = (): LegalRoute => {
+    const h = window.location.hash
+    if (h === '#/privacy') return 'privacy'
+    if (h === '#/terms') return 'terms'
+    return 'home'
+  }
+  const [route, setRoute] = useState<LegalRoute>(read)
+  useEffect(() => {
+    const onHash = () => {
+      setRoute(read())
+      window.scrollTo({ top: 0 })
+    }
+    window.addEventListener('hashchange', onHash)
+    return () => window.removeEventListener('hashchange', onHash)
+  }, [])
+  return route
+}
 
 type Theme = 'light' | 'dark'
 
@@ -25,8 +48,9 @@ function useTheme(): [Theme, () => void] {
 }
 
 /* Pauses the levitating mesh when the hero scrolls offscreen */
-function useMeshPause() {
+function useMeshPause(enabled: boolean) {
   useEffect(() => {
+    if (!enabled) return
     const layer = document.querySelector('.mesh-layer')
     const hero = document.querySelector('header')
     if (!layer || !hero || !('IntersectionObserver' in window)) return
@@ -38,14 +62,15 @@ function useMeshPause() {
     )
     io.observe(hero)
     return () => io.disconnect()
-  }, [])
+  }, [enabled])
 }
 
 /* GSAP landing-wide motion: hero entrance on load, scroll reveals everywhere
    else, stretch band bridging hero into packages. Reduced-motion returns
    early so the CSS fallback (visible, static) applies. */
-function useGsapMotion() {
+function useGsapMotion(enabled: boolean) {
   useEffect(() => {
+    if (!enabled) return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     gsap.registerPlugin(ScrollTrigger)
     let ctx: gsap.Context | undefined
@@ -98,7 +123,7 @@ function useGsapMotion() {
       return
     }
     return () => ctx?.revert()
-  }, [])
+  }, [enabled])
 }
 
 const SunIcon = () => (
@@ -132,8 +157,16 @@ const ArrowIcon = () => (
   </svg>
 )
 
-function Logo({ tone = 'plum' }: { tone?: 'plum' | 'cream' }) {
+function Logo({ tone = 'plum', interactive = true }: { tone?: 'plum' | 'cream'; interactive?: boolean }) {
   const color = tone === 'plum' ? 'text-primary dark:text-cream' : 'text-cream'
+  if (!interactive) {
+    return (
+      <span className={`inline-flex items-baseline justify-center ${color}`} aria-hidden="true">
+        <span className="font-logo-sans text-2xl sm:text-3xl font-bold tracking-[0.15em]">INEA</span>
+        <span className="font-logo-script -ml-[0.85em] translate-y-[35%] text-3xl sm:text-4xl">Scents</span>
+      </span>
+    )
+  }
   return (
     <div
       className={`inline-flex items-baseline justify-center cursor-pointer hover:opacity-80 transition-opacity ${color}`}
@@ -179,6 +212,7 @@ function appLoginUrl() {
 
 function ContactForm() {
   const [form, setForm] = useState({ name: '', email: '', phone: '', date: '', message: '', website: '' })
+  const [consent, setConsent] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [sent, setSent] = useState(false)
@@ -190,8 +224,9 @@ function ContactForm() {
       next.email = 'That email does not look complete - please check it.'
     if (!form.phone.trim() || !/^[\+0-9\s\-]{7,20}$/.test(form.phone))
       next.phone = 'Please add a reachable phone number.'
+    if (!consent) next.consent = 'Please accept the privacy policy so we can reply to your inquiry.'
     setErrors(next)
-    const first = ['name', 'email', 'phone'].find((k) => next[k])
+    const first = ['name', 'email', 'phone', 'consent'].find((k) => next[k])
     if (first) document.getElementById(first)?.focus()
     return Object.keys(next).length === 0
   }
@@ -202,10 +237,11 @@ function ContactForm() {
       const msg = Array.isArray(rawValue) ? rawValue[0] : rawValue
       if (!msg) continue
       const key = rawKey === 'event_date' ? 'date' : rawKey.replace(/^customer_/, '')
-      if (['name', 'email', 'phone', 'date', 'message'].includes(key)) next[key] = msg
+      const mapped = key === 'consent_privacy_version' ? 'consent' : key
+      if (['name', 'email', 'phone', 'date', 'message', 'consent'].includes(mapped)) next[mapped] = msg
     }
     setErrors(next)
-    const first = ['name', 'email', 'phone', 'date', 'message'].find((k) => next[k])
+    const first = ['name', 'email', 'phone', 'date', 'message', 'consent'].find((k) => next[k])
     if (first) document.getElementById(first)?.focus()
   }
 
@@ -229,6 +265,7 @@ function ContactForm() {
           event_date: form.date || null,
           message: form.message,
           website: form.website,
+          consent_privacy_version: PRIVACY_VERSION,
         }),
       })
       if (res.ok) {
@@ -288,6 +325,8 @@ function ContactForm() {
           onClick={() => {
             setSent(false)
             setForm({ name: '', email: '', phone: '', date: '', message: '', website: '' })
+            setConsent(false)
+            setErrors({})
           }}
           className="text-sm font-bold uppercase tracking-[0.2em] text-primary dark:text-cream underline underline-offset-8 decoration-primary/30 dark:decoration-cream/30 hover:decoration-primary dark:hover:decoration-cream transition-colors"
         >
@@ -448,6 +487,30 @@ function ContactForm() {
         />
         {err('message', 'message-error')}
       </details>
+      <div className="pt-2">
+        <label htmlFor="consent" className="flex items-start gap-3 cursor-pointer text-sm font-light text-primary/80 dark:text-cream/80">
+          <input
+            id="consent"
+            type="checkbox"
+            checked={consent}
+            onChange={(e) => {
+              setConsent(e.target.checked)
+              clearError('consent')
+            }}
+            className="mt-1 h-4 w-4 shrink-0 accent-[#6E3C53]"
+            aria-invalid={!!errors.consent}
+            aria-describedby={errors.consent ? 'consent-error' : undefined}
+          />
+          <span>
+            I agree to the{' '}
+            <a href="#/privacy" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4 decoration-accent hover:decoration-primary dark:hover:decoration-cream transition-colors">
+              privacy policy
+            </a>{' '}
+            and to being contacted about my inquiry.
+          </span>
+        </label>
+        {err('consent', 'consent-error')}
+      </div>
       <div className="pt-2 text-center">
         <button
           type="submit"
@@ -461,7 +524,11 @@ function ContactForm() {
           )}
         </button>
         <p className="text-xs text-primary/80 dark:text-cream/50 mt-4 tracking-wider">
-          Your information stays with us - never shared.
+          Your information stays with us - never shared. See our{' '}
+          <a href="#/privacy" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">
+            privacy policy
+          </a>
+          .
         </p>
       </div>
     </form>
@@ -500,9 +567,11 @@ const STEPS = [
 export default function App() {
   const [theme, toggleTheme] = useTheme()
   const [scrolled, setScrolled] = useState(false)
+  const legalRoute = useLegalRoute()
+  const isHome = legalRoute === 'home'
 
-  useGsapMotion()
-  useMeshPause()
+  useGsapMotion(isHome)
+  useMeshPause(isHome)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
@@ -535,6 +604,22 @@ export default function App() {
         <span className="mesh-f" />
         <span className="mesh-g" />
       </div>
+      {legalRoute !== 'home' ? (
+        <>
+          <nav
+            className="fixed top-0 left-0 right-0 z-50 bg-cream/85 dark:bg-night/85 backdrop-blur-md border-b border-primary/10 dark:border-cream/10 py-3"
+          >
+            <div className="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between">
+              <a href="#/" aria-label="Inea Scents home">
+                <Logo interactive={false} />
+              </a>
+              <ThemeButton theme={theme} onToggle={toggleTheme} />
+            </div>
+          </nav>
+          <LegalPage kind={legalRoute} />
+        </>
+      ) : (
+      <>
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 border-b ${
           scrolled
@@ -781,6 +866,31 @@ export default function App() {
             <div className="text-xs font-bold uppercase tracking-[0.2em]">Metro Manila, Philippines</div>
             <div className="w-1 h-1 rounded-full bg-cream/40" aria-hidden="true" />
             <a
+              href="#/privacy"
+              className="text-xs font-bold uppercase tracking-[0.2em] hover:text-cream transition-colors"
+            >
+              Privacy
+            </a>
+            <div className="w-1 h-1 rounded-full bg-cream/40" aria-hidden="true" />
+            <a
+              href="#/terms"
+              className="text-xs font-bold uppercase tracking-[0.2em] hover:text-cream transition-colors"
+            >
+              Terms
+            </a>
+            <div className="w-1 h-1 rounded-full bg-cream/40" aria-hidden="true" />
+            <a
+              href="#inquire"
+              onClick={(e) => {
+                e.preventDefault()
+                scrollToEl('inquire', 'start')
+              }}
+              className="text-xs font-bold uppercase tracking-[0.2em] hover:text-cream transition-colors"
+            >
+              Contact
+            </a>
+            <div className="w-1 h-1 rounded-full bg-cream/40" aria-hidden="true" />
+            <a
               href={appLoginUrl()}
               target="_blank"
               rel="noopener noreferrer"
@@ -804,6 +914,8 @@ export default function App() {
           </div>
         </div>
       </footer>
+      </>
+      )}
     </div>
   )
 }

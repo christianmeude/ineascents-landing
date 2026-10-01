@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ineascents.vercel.app/sitemap.xml
