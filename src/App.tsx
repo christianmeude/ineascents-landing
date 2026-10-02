@@ -206,8 +206,9 @@ const APP_BASE = (
   import.meta.env.VITE_FRONTEND_URL ?? 'https://ineascents-app.vercel.app'
 ).replace(/\/$/, '')
 
-/* Mobile App login URL: env holds the base in prod, but a dev may paste a
-   full deep link incl. port + hash (Flutter web uses ephemeral ports). */
+/* Mobile App login URL: env holds the base in prod; local Flutter web runs
+   pinned with `flutter run -d chrome --web-port=62409`. A full deep link
+   incl. hash also works since appLoginUrl passes through any '#'. */
 function appLoginUrl() {
   if (!APP_BASE) return '#inquire'
   if (APP_BASE.includes('#')) return APP_BASE

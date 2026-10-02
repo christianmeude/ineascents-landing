@@ -39,7 +39,7 @@ Copy `.env.example` to `.env.local` (names only, never real values):
   - Production: `https://ineascents.onrender.com`
 - `VITE_FRONTEND_URL` — mobile app base URL for the "Book in App" button.
   - Production: `https://ineascents-app.vercel.app`
-  - Local: paste your current Flutter-web URL with its ephemeral port, e.g. `http://localhost:62409` (Flutter web uses ephemeral local ports, so this changes per run). Code appends `/#/login` unless the value already contains a hash (`src/App.tsx:133-137`).
+  - Local: `http://localhost:62409` (Flutter web pinned via `flutter run -d chrome --web-port=62409`). Code appends `/#/login` unless the value already contains a hash (`src/App.tsx:212-216`).
 
 ## Inquiry-only contract
 
@@ -58,7 +58,7 @@ From `package.json`:
 
 ## Book in App
 
-"Book in App" buttons (`src/App.tsx:509-514`, `src/App.tsx:729-734`) link to the app login via `appLoginUrl()` (`src/App.tsx:133-137`): env base `VITE_FRONTEND_URL` (default `https://ineascents-app.vercel.app`) plus `/#/login`, unless the env value already contains a hash.
+"Book in App" buttons (`src/App.tsx:643-650`, `src/App.tsx:909-916`) link to the app login via `appLoginUrl()` (`src/App.tsx:212-216`): env base `VITE_FRONTEND_URL` (default `https://ineascents-app.vercel.app`) plus `/#/login`, unless the env value already contains a hash.
 
 ## Backend dependency
 
@@ -73,7 +73,7 @@ Without it, package/package-list sections fall back and the form shows "Form not
 
 - Form shows "not configured": `VITE_API_URL` is empty — check `.env.local`, restart `vite` after env changes.
 - API errors / CORS: backend must be running and reachable at `VITE_API_URL`; check backend logs.
-- "Book in App" lands on wrong port locally: Flutter web picked a new ephemeral port — update `VITE_FRONTEND_URL` in `.env.local` and restart dev.
+- "Book in App" unreachable locally: Flutter web is not on the pinned port — start it with `flutter run -d chrome --web-port=62409` to match `VITE_FRONTEND_URL` in `.env.local`, then restart dev.
 - Stale env values: Vite inlines `VITE_*` at startup — restart the dev server after edits.
 - Lint: run `npm run lint` (oxlint, zero-config).
 
