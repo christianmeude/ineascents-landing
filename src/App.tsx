@@ -2,19 +2,23 @@ import { useEffect, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import LegalPage, { PRIVACY_VERSION } from './legal'
+import StatusPage from './status'
+import NotFoundPage from './notfound'
 
 // L6: single source for the business page URL (was triplicated).
 const FACEBOOK_URL = 'https://www.facebook.com/profile.php?id=61580331093927'
 
 // L7: hash mini-router (no router dep, Vercel-static safe).
-type LegalRoute = 'home' | 'privacy' | 'terms'
+type LegalRoute = 'home' | 'privacy' | 'terms' | 'status' | 'notfound'
 
 function useLegalRoute(): LegalRoute {
   const read = (): LegalRoute => {
     const h = window.location.hash
     if (h === '#/privacy') return 'privacy'
     if (h === '#/terms') return 'terms'
-    return 'home'
+    if (h === '#/status') return 'status'
+    if (h === '#/' || h === '' || !h.startsWith('#/')) return 'home'
+    return 'notfound'
   }
   const [route, setRoute] = useState<LegalRoute>(read)
   useEffect(() => {
@@ -616,7 +620,11 @@ export default function App() {
               <ThemeButton theme={theme} onToggle={toggleTheme} />
             </div>
           </nav>
-          <LegalPage kind={legalRoute} />
+          {(legalRoute === 'privacy' || legalRoute === 'terms') ? (
+            <LegalPage kind={legalRoute} />
+          ) : null}
+          {legalRoute === 'status' ? <StatusPage /> : null}
+          {legalRoute === 'notfound' ? <NotFoundPage /> : null}
         </>
       ) : (
       <>
@@ -877,6 +885,13 @@ export default function App() {
               className="text-xs font-bold uppercase tracking-[0.2em] hover:text-cream transition-colors"
             >
               Terms
+            </a>
+            <div className="w-1 h-1 rounded-full bg-cream/40" aria-hidden="true" />
+            <a
+              href="#/status"
+              className="text-xs font-bold uppercase tracking-[0.2em] hover:text-cream transition-colors"
+            >
+              Status
             </a>
             <div className="w-1 h-1 rounded-full bg-cream/40" aria-hidden="true" />
             <a
